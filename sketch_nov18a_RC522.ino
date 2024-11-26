@@ -11,7 +11,7 @@
 #define CS_PIN          7
 #define BTN_PIN         8
 #define DOOR_PIN        9
-#define RELAY_PIN       10  // Пін для реле, який буде замикати/відмикати двері
+#define RELAY_PIN       10
 #define EE_START_ADDR   0
 #define EE_KEY        100
 
@@ -58,41 +58,41 @@ void setup() {
     savedTags = EEPROM.read(EE_START_ADDR + 1);
   }
 
-  // Стартова ініціалізація замка:
+
   if (savedTags > 0) {
     if (isOpen()) {
       ledSetup(SUCCESS);
       locked = false;
-      unlock();  // Відкриваємо замок
+      unlock();
     } else {
       ledSetup(DECLINE);
       locked = true;
-      lock();  // Закриваємо замок
+      lock();
     }
   } else {
     ledSetup(SUCCESS);
     locked = false;
-    unlock();  // Відкриваємо замок
+    unlock();
   }
 }
 
 void loop() {
   if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) {
     int16_t tagIndex = foundTag(rfid.uid.uidByte, rfid.uid.size);
-    if (locked) {  // Якщо замок заблоковано
+    if (locked) { 
       indicate(DECLINE);
-    } if (tagIndex >= 0) {  // Якщо знайдена карта у списку дозволених
+    } if (tagIndex >= 0) { 
       if (locked) {
         indicate(SUCCESS);
-        unlock();  // Відкриваємо замок
+        unlock();
         locked = false;
       } else {
         indicate(SUCCESS);
-        lock();  // Закриваємо замок
+        lock(); 
         locked = true;
       }
     } else {
-      indicate(DECLINE);  // Якщо карта не знайдена, показуємо відмову
+      indicate(DECLINE); 
     }
     rfid.PICC_HaltA();
   }
@@ -113,33 +113,33 @@ void indicate(uint8_t signal) {
   switch (signal) {
     case DECLINE:
       Serial.println("DECLINE");
-      tone(BUZZER_PIN, 5000, 3000);  // Звук відмови
+      tone(BUZZER_PIN, 5000, 3000); 
       return;
     case SUCCESS:
       Serial.println("SUCCESS");
-      tone(BUZZER_PIN, 890, 330);  // Звук успіху
+      tone(BUZZER_PIN, 890, 330); 
       return;
-    case OPEN_SOUND:  // Короткий високий тон
+    case OPEN_SOUND: 
       Serial.println("OPEN SOUND");
-      tone(BUZZER_PIN, 3000, 100); // Високий тон на 100 мс
+      tone(BUZZER_PIN, 3000, 100);
       return;
-    case CLOSE_SOUND:  // Короткий низький тон
+    case CLOSE_SOUND: 
       Serial.println("CLOSE SOUND");
-      tone(BUZZER_PIN, 200, 150);   // Низький тон на 100 мс
+      tone(BUZZER_PIN, 200, 150);
       return;
   }
 }
 
 void lock(void) {
-  digitalWrite(RELAY_PIN, LOW);  // Вимикаємо реле, щоб закрити замок
+  digitalWrite(RELAY_PIN, LOW);
   Serial.println("lock");
-  indicate(CLOSE_SOUND); // Звук закриття
+  indicate(CLOSE_SOUND);
 }
 
 void unlock(void) {
-  digitalWrite(RELAY_PIN, HIGH);  // Вмикаємо реле, щоб відкрити замок
+  digitalWrite(RELAY_PIN, HIGH);
   Serial.println("unlock");
-  indicate(OPEN_SOUND); // Звук відкриття
+  indicate(OPEN_SOUND);
 }
 
 int16_t foundTag(uint8_t *tag, uint8_t size) {

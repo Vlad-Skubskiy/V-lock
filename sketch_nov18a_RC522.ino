@@ -34,7 +34,7 @@ void setup() {
 
   pinMode(BTN_PIN, INPUT_PULLUP);
   pinMode(DOOR_PIN, INPUT_PULLUP);
-  pinMode(RELAY_PIN, OUTPUT);  // Пін для реле
+  pinMode(RELAY_PIN, OUTPUT);
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(RED_LED_PIN, OUTPUT);
   pinMode(GREEN_LED_PIN, OUTPUT);
